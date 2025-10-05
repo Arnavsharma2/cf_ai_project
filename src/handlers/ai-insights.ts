@@ -11,7 +11,7 @@ export async function generateAIInsights(
   performance: PerformanceAnalysis,
   env: Env
 ): Promise<AIInsights> {
-  // The Oracle speaks through AI, but wisdom can be found even in silence
+  // AI-powered analysis provides detailed insights when available
   if (!env.OPENAI_KEY) {
     return generateBasicInsights(security, performance);
   }

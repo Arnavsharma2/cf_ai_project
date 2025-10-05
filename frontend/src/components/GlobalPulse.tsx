@@ -16,6 +16,7 @@ interface GlobalPulseData {
   activeThreats: number;
   totalTraffic: number;
   insights: string[];
+  overallStatus?: 'healthy' | 'degraded' | 'critical';
 }
 
 interface GlobalPulseProps {
@@ -48,151 +49,124 @@ export const GlobalPulse: React.FC<GlobalPulseProps> = ({ onRegionClick }) => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'healthy': return 'text-green-600 bg-green-50 border-green-200';
-      case 'degraded': return 'text-yellow-600 bg-yellow-50 border-yellow-200';
-      case 'critical': return 'text-red-600 bg-red-50 border-red-200';
-      default: return 'text-gray-600 bg-gray-50 border-gray-200';
-    }
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'healthy': return <CheckCircle className="w-4 h-4" />;
-      case 'degraded': return <AlertTriangle className="w-4 h-4" />;
-      case 'critical': return <AlertTriangle className="w-4 h-4" />;
-      default: return <Activity className="w-4 h-4" />;
+      case 'healthy':
+        return 'text-green-400 bg-green-900/20 border-green-500/30';
+      case 'degraded':
+        return 'text-yellow-400 bg-yellow-900/20 border-yellow-500/30';
+      case 'critical':
+        return 'text-red-400 bg-red-900/20 border-red-500/30';
+      default:
+        return 'text-gray-400 bg-gray-900/20 border-gray-500/30';
     }
   };
 
   if (loading) {
     return (
-      <div className="card">
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+      <div className="card text-center py-12">
+        <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+          <Globe className="w-8 h-8 text-white animate-pulse" />
         </div>
+        <p className="text-xl text-gray-400">Loading global monitoring data...</p>
       </div>
     );
   }
 
   if (!pulseData) {
     return (
-      <div className="card">
-        <div className="text-center text-gray-500">
-          <Globe className="w-12 h-12 mx-auto mb-4" />
-          <p>Unable to connect to The Global Pulse</p>
-        </div>
+      <div className="card text-center py-12 bg-red-900/20 border-red-500/30 text-red-400">
+        <AlertTriangle className="w-16 h-16 mx-auto mb-4" />
+        <p className="text-xl font-medium">Failed to load monitoring data</p>
+        <p className="text-sm mt-2">Unable to connect to global monitoring systems</p>
       </div>
     );
   }
 
-  const chartData = pulseData.regions.map(region => ({
-    name: region.name.split(' ')[0], // Shorten names for chart
-    health: region.health,
-    latency: region.latency,
-    threats: region.threats,
-    traffic: region.traffic,
-  }));
-
   return (
-    <div className="space-y-6">
-      {/* Global Overview */}
+    <div className="space-y-8">
+      {/* Header */}
       <div className="card">
-        <div className="flex items-center space-x-2 mb-6">
-          <Globe className="w-6 h-6 text-primary-600" />
-          <h2 className="text-2xl font-bold text-gray-900">The Global Pulse</h2>
-          <div className={`px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(
-            pulseData.globalHealth >= 90 ? 'healthy' : 
-            pulseData.globalHealth >= 70 ? 'degraded' : 'critical'
-          )}`}>
-            {pulseData.globalHealth}/100
+        <div className="flex items-center space-x-4 mb-8">
+          <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center">
+            <Globe className="w-6 h-6 text-white" />
+          </div>
+          <div>
+            <h3 className="text-3xl font-bold gradient-text">Global Monitor</h3>
+            <p className="text-gray-400">Real-time internet health monitoring</p>
+          </div>
+          <div className={`px-4 py-2 rounded-full text-sm font-medium ${getStatusColor(pulseData.overallStatus || 'healthy')}`}>
+            {pulseData.overallStatus ? (pulseData.overallStatus.charAt(0).toUpperCase() + pulseData.overallStatus.slice(1)) : 'Healthy'}
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <div className="metric-card text-center">
-            <div className="flex items-center justify-center space-x-2 mb-2">
-              <Activity className="w-5 h-5 text-primary-600" />
-              <span className="font-medium text-gray-700">Global Health</span>
-            </div>
-            <p className="text-3xl font-bold text-gray-900">{pulseData.globalHealth}/100</p>
-          </div>
+        <p className="text-gray-400 mb-8 text-lg">
+          Monitor global internet health across regions with real-time data on latency, threats, and traffic patterns.
+        </p>
 
+        {/* Global Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="metric-card text-center">
-            <div className="flex items-center justify-center space-x-2 mb-2">
-              <Shield className="w-5 h-5 text-red-600" />
-              <span className="font-medium text-gray-700">Active Threats</span>
-            </div>
-            <p className="text-3xl font-bold text-gray-900">{pulseData.activeThreats}</p>
+            <div className="text-3xl font-bold gradient-text mb-2">{pulseData.globalHealth}%</div>
+            <div className="text-gray-400">Global Health</div>
           </div>
-
           <div className="metric-card text-center">
-            <div className="flex items-center justify-center space-x-2 mb-2">
-              <Zap className="w-5 h-5 text-green-600" />
-              <span className="font-medium text-gray-700">Total Traffic</span>
-            </div>
-            <p className="text-3xl font-bold text-gray-900">{pulseData.totalTraffic.toFixed(0)}%</p>
+            <div className="text-3xl font-bold text-red-400 mb-2">{pulseData.activeThreats}</div>
+            <div className="text-gray-400">Active Threats</div>
           </div>
-
           <div className="metric-card text-center">
-            <div className="flex items-center justify-center space-x-2 mb-2">
-              <Globe className="w-5 h-5 text-blue-600" />
-              <span className="font-medium text-gray-700">Regions Monitored</span>
-            </div>
-            <p className="text-3xl font-bold text-gray-900">{pulseData.regions.length}</p>
+            <div className="text-3xl font-bold text-blue-400 mb-2">{pulseData.totalTraffic}</div>
+            <div className="text-gray-400">Total Traffic</div>
           </div>
-        </div>
-
-        {/* Global Health Chart */}
-        <div className="h-64">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Internet Health by Region</h3>
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis domain={[0, 100]} />
-              <Tooltip 
-                formatter={(value: any, name: string) => [
-                  `${value}${name === 'health' ? '%' : name === 'latency' ? 'ms' : ''}`, 
-                  name === 'health' ? 'Health' : name === 'latency' ? 'Latency' : name
-                ]}
-              />
-              <Bar dataKey="health" fill="#3b82f6" name="Health" />
-            </BarChart>
-          </ResponsiveContainer>
         </div>
       </div>
 
-      {/* Regional Status */}
+      {/* Regional Data */}
       <div className="card">
-        <h3 className="text-xl font-bold text-gray-900 mb-6">Regional Status</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <h4 className="text-xl font-bold mb-6 gradient-text">Regional Status</h4>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {pulseData.regions.map((region, index) => (
-            <div 
-              key={index} 
-              className={`p-4 rounded-lg border cursor-pointer transition-all duration-200 hover:shadow-md ${getStatusColor(region.status)}`}
+            <div
+              key={index}
+              className="metric-card hover:border-gray-700 cursor-pointer transition-all duration-200"
               onClick={() => onRegionClick?.(region.name)}
             >
-              <div className="flex items-center justify-between mb-3">
-                <h4 className="font-semibold">{region.name}</h4>
-                {getStatusIcon(region.status)}
+              <div className="flex items-center justify-between mb-4">
+                <h5 className="font-semibold text-lg text-white">{region.name}</h5>
+                <div className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(region.status)}`}>
+                  {region.status}
+                </div>
               </div>
               
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span>Health:</span>
-                  <span className="font-medium">{region.health}%</span>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-400 flex items-center">
+                    <Activity className="w-4 h-4 mr-2" />
+                    Health
+                  </span>
+                  <span className="font-semibold text-white">{region.health}%</span>
                 </div>
-                <div className="flex justify-between text-sm">
-                  <span>Latency:</span>
-                  <span className="font-medium">{region.latency}ms</span>
+                
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-400 flex items-center">
+                    <Zap className="w-4 h-4 mr-2" />
+                    Latency
+                  </span>
+                  <span className="font-semibold text-white">{region.latency}ms</span>
                 </div>
-                <div className="flex justify-between text-sm">
-                  <span>Threats:</span>
-                  <span className="font-medium">{region.threats}</span>
+                
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-400 flex items-center">
+                    <Shield className="w-4 h-4 mr-2" />
+                    Threats
+                  </span>
+                  <span className="font-semibold text-white">{region.threats}</span>
                 </div>
-                <div className="flex justify-between text-sm">
-                  <span>Traffic:</span>
-                  <span className="font-medium">{region.traffic.toFixed(1)}%</span>
+                
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-400 flex items-center">
+                    <Globe className="w-4 h-4 mr-2" />
+                    Traffic
+                  </span>
+                  <span className="font-semibold text-white">{region.traffic}%</span>
                 </div>
               </div>
             </div>
@@ -201,22 +175,24 @@ export const GlobalPulse: React.FC<GlobalPulseProps> = ({ onRegionClick }) => {
       </div>
 
       {/* Insights */}
-      {pulseData.insights.length > 0 && (
+      {pulseData.insights && pulseData.insights.length > 0 && (
         <div className="card">
-          <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center space-x-2">
-            <Activity className="w-6 h-6 text-primary-600" />
-            <span>Global Insights</span>
-          </h3>
-          <div className="space-y-3">
+          <h4 className="text-xl font-bold mb-6 gradient-text">System Insights</h4>
+          <div className="space-y-4">
             {pulseData.insights.map((insight, index) => (
-              <div key={index} className="flex items-start space-x-3 p-3 bg-blue-50 rounded-lg">
-                <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
-                <p className="text-gray-700">{insight}</p>
+              <div key={index} className="flex items-start space-x-3 p-4 bg-gray-800/50 rounded-lg">
+                <CheckCircle className="w-5 h-5 text-green-400 mt-0.5 flex-shrink-0" />
+                <p className="text-gray-300">{insight}</p>
               </div>
             ))}
           </div>
         </div>
       )}
+
+      {/* Last Updated */}
+      <div className="text-center text-sm text-gray-500">
+        Last updated: {new Date(pulseData.timestamp).toLocaleString()}
+      </div>
     </div>
   );
 };
