@@ -11,119 +11,147 @@ export const SecurityPanel: React.FC<SecurityPanelProps> = ({ security }) => {
     switch (grade) {
       case 'A+':
       case 'A':
-        return 'text-success-600 bg-success-50';
+        return 'text-green-400 bg-green-900/20 border-green-500/30';
       case 'B':
-        return 'text-warning-600 bg-warning-50';
+        return 'text-yellow-400 bg-yellow-900/20 border-yellow-500/30';
       case 'C':
       case 'D':
       case 'F':
-        return 'text-danger-600 bg-danger-50';
+        return 'text-red-400 bg-red-900/20 border-red-500/30';
       default:
-        return 'text-gray-600 bg-gray-50';
+        return 'text-gray-400 bg-gray-900/20 border-gray-500/30';
     }
   };
 
   const getVulnerabilityColor = (level: string) => {
     switch (level) {
       case 'low':
-        return 'text-success-600 bg-success-50';
+        return 'text-green-400 bg-green-900/20 border-green-500/30';
       case 'medium':
-        return 'text-warning-600 bg-warning-50';
+        return 'text-yellow-400 bg-yellow-900/20 border-yellow-500/30';
       case 'high':
-      return 'text-danger-600 bg-danger-50';
-      case 'critical':
-        return 'text-danger-700 bg-danger-100';
+        return 'text-red-400 bg-red-900/20 border-red-500/30';
       default:
-        return 'text-gray-600 bg-gray-50';
+        return 'text-gray-400 bg-gray-900/20 border-gray-500/30';
     }
+  };
+
+  const getHeaderColor = (enabled: boolean) => {
+    return enabled ? 'text-green-400' : 'text-red-400';
   };
 
   return (
     <div className="card">
-      <div className="flex items-center space-x-2 mb-6">
-        <Shield className="w-6 h-6 text-primary-600" />
-        <h3 className="text-xl font-bold text-gray-900">Security Analysis</h3>
-        <div className={`px-3 py-1 rounded-full text-sm font-medium ${getGradeColor(security.ssl.grade)}`}>
-          {security.ssl.grade}
+      <div className="flex items-center space-x-3 mb-6">
+        <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center">
+          <Shield className="w-5 h-5 text-white" />
+        </div>
+        <h3 className="text-xl font-bold gradient-text">Security Analysis</h3>
+      </div>
+
+      {/* SSL/TLS Configuration */}
+      <div className="mb-6">
+        <h4 className="text-lg font-semibold text-white mb-3">SSL/TLS Configuration</h4>
+        <div className="bg-gray-800 rounded-lg p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-gray-300">Certificate Grade</span>
+            <span className={`px-3 py-1 rounded-full text-sm font-medium border ${getGradeColor(security.ssl.grade)}`}>
+              {security.ssl.grade}
+            </span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-gray-300">Valid Certificate</span>
+            <div className="flex items-center space-x-2">
+              {security.ssl.valid ? (
+                <CheckCircle className="w-4 h-4 text-green-400" />
+              ) : (
+                <XCircle className="w-4 h-4 text-red-400" />
+              )}
+              <span className={getHeaderColor(security.ssl.valid)}>
+                {security.ssl.valid ? 'Valid' : 'Invalid'}
+              </span>
+            </div>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-gray-300">Protocol</span>
+            <span className="text-white font-mono">{security.ssl.protocol}</span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-gray-300">Issuer</span>
+            <span className="text-white">{security.ssl.issuer}</span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-gray-300">Expires</span>
+            <span className="text-white">{new Date(security.ssl.expiry).toLocaleDateString()}</span>
+          </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* SSL/TLS */}
-        <div>
-          <h4 className="font-semibold text-gray-900 mb-3 flex items-center space-x-2">
-            <Lock className="w-5 h-5" />
-            <span>SSL/TLS Certificate</span>
-          </h4>
-          <div className="space-y-2">
-            <div className="flex justify-between">
-              <span className="text-gray-600">Valid:</span>
-              <span className={security.ssl.valid ? 'text-success-600' : 'text-danger-600'}>
-                {security.ssl.valid ? 'Yes' : 'No'}
-              </span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Grade:</span>
-              <span className={`px-2 py-1 rounded text-sm font-medium ${getGradeColor(security.ssl.grade)}`}>
-                {security.ssl.grade}
-              </span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Protocol:</span>
-              <span className="text-gray-900">{security.ssl.protocol}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Issuer:</span>
-              <span className="text-gray-900 text-sm">{security.ssl.issuer}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Security Headers */}
-        <div>
-          <h4 className="font-semibold text-gray-900 mb-3">Security Headers</h4>
-          <div className="space-y-2">
-            {Object.entries(security.headers).map(([header, enabled]) => (
-              <div key={header} className="flex items-center justify-between">
-                <span className="text-gray-600 capitalize">{header.replace(/([A-Z])/g, ' $1').trim()}:</span>
-                <div className="flex items-center space-x-1">
-                  {enabled ? (
-                    <CheckCircle className="w-4 h-4 text-success-600" />
-                  ) : (
-                    <XCircle className="w-4 h-4 text-danger-600" />
-                  )}
-                  <span className={enabled ? 'text-success-600' : 'text-danger-600'}>
-                    {enabled ? 'Enabled' : 'Missing'}
-                  </span>
-                </div>
+      {/* Security Headers */}
+      <div className="mb-6">
+        <h4 className="text-lg font-semibold text-white mb-3">Security Headers</h4>
+        <div className="bg-gray-800 rounded-lg p-4 space-y-3">
+          {Object.entries(security.headers).map(([header, enabled]) => (
+            <div key={header} className="flex items-center justify-between">
+              <span className="text-gray-300 font-mono text-sm">{header}</span>
+              <div className="flex items-center space-x-2">
+                {enabled ? (
+                  <CheckCircle className="w-4 h-4 text-green-400" />
+                ) : (
+                  <XCircle className="w-4 h-4 text-red-400" />
+                )}
+                <span className={getHeaderColor(enabled)}>
+                  {enabled ? 'Enabled' : 'Missing'}
+                </span>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
       </div>
 
       {/* Vulnerabilities */}
-      <div className="mt-6">
-        <h4 className="font-semibold text-gray-900 mb-3 flex items-center space-x-2">
-          <AlertTriangle className="w-5 h-5" />
-          <span>Vulnerabilities</span>
-        </h4>
-        <div className={`p-4 rounded-lg border ${getVulnerabilityColor(security.vulnerabilities.level)}`}>
-          <div className="flex items-center justify-between mb-2">
-            <span className="font-medium">
-              {security.vulnerabilities.count} vulnerabilities detected
-            </span>
-            <span className={`px-2 py-1 rounded text-sm font-medium ${getVulnerabilityColor(security.vulnerabilities.level)}`}>
+      <div className="mb-6">
+        <h4 className="text-lg font-semibold text-white mb-3">Vulnerabilities</h4>
+        <div className="bg-gray-800 rounded-lg p-4">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-gray-300">Threat Level</span>
+            <span className={`px-3 py-1 rounded-full text-sm font-medium border ${getVulnerabilityColor(security.vulnerabilities.level)}`}>
               {security.vulnerabilities.level.toUpperCase()}
             </span>
           </div>
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-gray-300">Vulnerabilities Found</span>
+            <span className="text-white font-semibold">{security.vulnerabilities.count}</span>
+          </div>
           {security.vulnerabilities.details.length > 0 && (
-            <ul className="space-y-1">
-              {security.vulnerabilities.details.map((detail, index) => (
-                <li key={index} className="text-sm">• {detail}</li>
-              ))}
-            </ul>
+            <div className="space-y-2">
+              <span className="text-gray-300 text-sm">Details:</span>
+              <ul className="space-y-1">
+                {security.vulnerabilities.details.map((vuln, index) => (
+                  <li key={index} className="text-red-400 text-sm flex items-start space-x-2">
+                    <AlertTriangle className="w-3 h-3 mt-0.5 flex-shrink-0" />
+                    <span>{vuln}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
+        </div>
+      </div>
+
+      {/* Security Score */}
+      <div className="bg-gray-800 rounded-lg p-4">
+        <div className="flex items-center justify-between">
+          <span className="text-gray-300">Security Score</span>
+          <div className="flex items-center space-x-3">
+            <div className="w-24 bg-gray-700 rounded-full h-2">
+              <div 
+                className="bg-gradient-to-r from-red-500 to-orange-500 h-2 rounded-full transition-all duration-300"
+                style={{ width: `${security.threatScore}%` }}
+              ></div>
+            </div>
+            <span className="text-white font-bold text-lg">{security.threatScore}/100</span>
+          </div>
         </div>
       </div>
     </div>

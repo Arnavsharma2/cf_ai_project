@@ -17,7 +17,7 @@ export async function generateAIInsights(
   }
 
   try {
-    // The Oracle's Socratic method - asking the right questions
+    // AI-powered analysis with comprehensive insights
     const prompt = createOraclePrompt(url, security, performance);
     
     // Try Cloudflare AI first, fallback to OpenAI
@@ -84,34 +84,37 @@ function createOraclePrompt(
   performance: PerformanceAnalysis
 ): string {
   return `
-The Oracle's Gaze: A Deep Analysis of Digital Architecture
+Professional Website Security and Performance Analysis
 
-Behold, a digital realm presents itself for examination: ${url}
+Website: ${url}
 
-The Watchtower's Report (Security Analysis):
-- Digital Fortress Grade: ${security.ssl.grade}
-- Cryptographic Foundation: ${security.ssl.valid ? 'Strong' : 'Weak'}
-- Defensive Headers: HSTS=${security.headers.hsts}, CSP=${security.headers.csp}, X-Frame-Options=${security.headers.xFrameOptions}
-- Vulnerabilities Discovered: ${security.vulnerabilities.count} (${security.vulnerabilities.level} severity)
-- Overall Defense Strength: ${security.threatScore}/100
+Security Analysis:
+- SSL Certificate Grade: ${security.ssl.grade}
+- Certificate Valid: ${security.ssl.valid ? 'Yes' : 'No'}
+- Security Headers: HSTS=${security.headers.hsts}, CSP=${security.headers.csp}, X-Frame-Options=${security.headers.xFrameOptions}
+- Vulnerabilities Found: ${security.vulnerabilities.count} (${security.vulnerabilities.level} severity)
+- Security Score: ${security.threatScore}/100
 
-The Global Pulse's Rhythm (Performance Analysis):
-- Response Time: ${performance.loadTime}ms
-- Performance Harmony: ${performance.performanceScore}/100
-- First Contentful Paint: ${performance.firstContentfulPaint}ms
-- Largest Contentful Paint: ${performance.largestContentfulPaint}ms
-- Layout Stability: ${performance.cumulativeLayoutShift}
+Performance Analysis:
+- Load Time: ${performance.loadTime}ms
+- Performance Score: ${performance.performanceScore}/100
+- Core Web Vitals:
+  - First Contentful Paint: ${performance.firstContentfulPaint}ms
+  - Largest Contentful Paint: ${performance.largestContentfulPaint}ms
+  - Cumulative Layout Shift: ${performance.cumulativeLayoutShift}
+  - First Input Delay: ${performance.firstInputDelay}ms
+  - Total Blocking Time: ${performance.totalBlockingTime}ms
 
-As The Oracle, provide your wisdom in JSON form:
-1. overallScore (0-100) - The realm's overall health
-2. riskLevel (low/medium/high/critical) - The danger level
-3. summary - Your profound assessment of this digital architecture
-4. strengths - The realm's admirable qualities
-5. weaknesses - Areas where the architecture falters
-6. threats - The shadows that threaten this digital space
-7. optimizationSuggestions - Your masterclass teachings for improvement
+Provide a comprehensive technical analysis in JSON format:
+1. overallScore (0-100) - Overall website health score
+2. riskLevel (low/medium/high) - Security risk assessment
+3. summary - Technical assessment of security and performance posture
+4. strengths - Security and performance strengths identified
+5. weaknesses - Areas requiring immediate attention
+6. threats - Specific security vulnerabilities and risks
+7. optimizationSuggestions - Detailed technical recommendations with implementation guidance
 
-Speak as The Oracle would - with wisdom, depth, and understanding of the deeper principles at work.
+Focus on technical accuracy, actionable insights, and clear explanations of security concepts.
 
 Format as valid JSON only.
   `.trim();

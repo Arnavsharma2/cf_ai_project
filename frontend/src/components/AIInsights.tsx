@@ -1,130 +1,120 @@
 import React from 'react';
 import { AIInsights as AIInsightsType } from '../types/analysis';
-import { Brain, AlertTriangle, CheckCircle, XCircle, Lightbulb } from 'lucide-react';
+import { Brain, Lightbulb, AlertTriangle, CheckCircle, Target } from 'lucide-react';
 
 interface AIInsightsProps {
   insights: AIInsightsType;
 }
 
 export const AIInsights: React.FC<AIInsightsProps> = ({ insights }) => {
-  const getRiskColor = (level: string) => {
-    switch (level) {
-      case 'low':
-        return 'text-success-600 bg-success-50 border-success-200';
-      case 'medium':
-        return 'text-warning-600 bg-warning-50 border-warning-200';
-      case 'high':
-        return 'text-danger-600 bg-danger-50 border-danger-200';
-      case 'critical':
-        return 'text-danger-700 bg-danger-100 border-danger-300';
-      default:
-        return 'text-gray-600 bg-gray-50 border-gray-200';
-    }
-  };
-
-  const getScoreColor = (score: number) => {
-    if (score >= 90) return 'text-success-600';
-    if (score >= 70) return 'text-warning-600';
-    return 'text-danger-600';
-  };
-
   return (
     <div className="card">
-      <div className="flex items-center space-x-2 mb-6">
-        <Brain className="w-6 h-6 text-primary-600" />
-        <h3 className="text-xl font-bold text-gray-900">AI-Powered Insights</h3>
-        <div className={`px-3 py-1 rounded-full text-sm font-medium border ${getRiskColor(insights.riskLevel)}`}>
-          {insights.riskLevel.toUpperCase()}
+      <div className="flex items-center space-x-3 mb-6">
+        <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center">
+          <Brain className="w-5 h-5 text-white" />
         </div>
+        <h3 className="text-xl font-bold gradient-text">AI-Powered Insights</h3>
       </div>
 
-      {/* Overall Score and Summary */}
+      {/* Overall Assessment */}
       <div className="mb-6">
-        <div className="flex items-center justify-between mb-3">
-          <span className="font-semibold text-gray-900">Overall Score</span>
-          <span className={`text-3xl font-bold ${getScoreColor(insights.overallScore)}`}>
-            {insights.overallScore}/100
-          </span>
+        <div className="bg-gray-800 rounded-lg p-4">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-gray-300">Overall Assessment</span>
+            <div className="flex items-center space-x-2">
+              <div className="w-24 bg-gray-700 rounded-full h-2">
+                <div 
+                  className="bg-gradient-to-r from-red-500 to-orange-500 h-2 rounded-full transition-all duration-300"
+                  style={{ width: `${insights.overallScore}%` }}
+                ></div>
+              </div>
+              <span className="text-white font-bold text-lg">{insights.overallScore}/100</span>
+            </div>
+          </div>
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-gray-300">Risk Level</span>
+            <span className={`px-3 py-1 rounded-full text-sm font-medium border ${
+              insights.riskLevel === 'low' 
+                ? 'text-green-400 bg-green-900/20 border-green-500/30'
+                : insights.riskLevel === 'medium'
+                ? 'text-yellow-400 bg-yellow-900/20 border-yellow-500/30'
+                : 'text-red-400 bg-red-900/20 border-red-500/30'
+            }`}>
+              {insights.riskLevel.toUpperCase()}
+            </span>
+          </div>
+          <p className="text-gray-300 text-sm leading-relaxed">{insights.summary}</p>
         </div>
-        <p className="text-gray-700 bg-gray-50 p-4 rounded-lg">
-          {insights.summary}
-        </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Strengths */}
-        {insights.strengths.length > 0 && (
-          <div>
-            <h4 className="font-semibold text-gray-900 mb-3 flex items-center space-x-2">
-              <CheckCircle className="w-5 h-5 text-success-600" />
-              <span>Strengths</span>
-            </h4>
-            <ul className="space-y-2">
-              {insights.strengths.map((strength, index) => (
-                <li key={index} className="flex items-start space-x-2">
-                  <div className="w-2 h-2 bg-success-600 rounded-full mt-2 flex-shrink-0"></div>
-                  <span className="text-gray-700">{strength}</span>
-                </li>
-              ))}
-            </ul>
+      {/* Strengths */}
+      {insights.strengths && insights.strengths.length > 0 && (
+        <div className="mb-6">
+          <h4 className="text-lg font-semibold text-white mb-3 flex items-center">
+            <CheckCircle className="w-5 h-5 text-green-400 mr-2" />
+            Strengths
+          </h4>
+          <div className="space-y-2">
+            {insights.strengths.map((strength, index) => (
+              <div key={index} className="flex items-start space-x-3 p-3 bg-green-900/20 border border-green-500/30 rounded-lg">
+                <div className="w-2 h-2 bg-green-400 rounded-full mt-2 flex-shrink-0"></div>
+                <p className="text-gray-300 text-sm">{strength}</p>
+              </div>
+            ))}
           </div>
-        )}
+        </div>
+      )}
 
-        {/* Weaknesses */}
-        {insights.weaknesses.length > 0 && (
-          <div>
-            <h4 className="font-semibold text-gray-900 mb-3 flex items-center space-x-2">
-              <XCircle className="w-5 h-5 text-danger-600" />
-              <span>Areas for Improvement</span>
-            </h4>
-            <ul className="space-y-2">
-              {insights.weaknesses.map((weakness, index) => (
-                <li key={index} className="flex items-start space-x-2">
-                  <div className="w-2 h-2 bg-danger-600 rounded-full mt-2 flex-shrink-0"></div>
-                  <span className="text-gray-700">{weakness}</span>
-                </li>
-              ))}
-            </ul>
+      {/* Weaknesses */}
+      {insights.weaknesses && insights.weaknesses.length > 0 && (
+        <div className="mb-6">
+          <h4 className="text-lg font-semibold text-white mb-3 flex items-center">
+            <AlertTriangle className="w-5 h-5 text-yellow-400 mr-2" />
+            Areas for Improvement
+          </h4>
+          <div className="space-y-2">
+            {insights.weaknesses.map((weakness, index) => (
+              <div key={index} className="flex items-start space-x-3 p-3 bg-yellow-900/20 border border-yellow-500/30 rounded-lg">
+                <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2 flex-shrink-0"></div>
+                <p className="text-gray-300 text-sm">{weakness}</p>
+              </div>
+            ))}
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Threats */}
-      {insights.threats.length > 0 && (
-        <div className="mt-6">
-          <h4 className="font-semibold text-gray-900 mb-3 flex items-center space-x-2">
-            <AlertTriangle className="w-5 h-5 text-warning-600" />
-            <span>Security Threats</span>
+      {insights.threats && insights.threats.length > 0 && (
+        <div className="mb-6">
+          <h4 className="text-lg font-semibold text-white mb-3 flex items-center">
+            <AlertTriangle className="w-5 h-5 text-red-400 mr-2" />
+            Security Threats
           </h4>
-          <div className="bg-warning-50 border border-warning-200 rounded-lg p-4">
-            <ul className="space-y-2">
-              {insights.threats.map((threat, index) => (
-                <li key={index} className="flex items-start space-x-2">
-                  <div className="w-2 h-2 bg-warning-600 rounded-full mt-2 flex-shrink-0"></div>
-                  <span className="text-gray-700">{threat}</span>
-                </li>
-              ))}
-            </ul>
+          <div className="space-y-2">
+            {insights.threats.map((threat, index) => (
+              <div key={index} className="flex items-start space-x-3 p-3 bg-red-900/20 border border-red-500/30 rounded-lg">
+                <div className="w-2 h-2 bg-red-400 rounded-full mt-2 flex-shrink-0"></div>
+                <p className="text-gray-300 text-sm">{threat}</p>
+              </div>
+            ))}
           </div>
         </div>
       )}
 
       {/* Optimization Suggestions */}
-      {insights.optimizationSuggestions.length > 0 && (
-        <div className="mt-6">
-          <h4 className="font-semibold text-gray-900 mb-3 flex items-center space-x-2">
-            <Lightbulb className="w-5 h-5 text-primary-600" />
-            <span>AI Recommendations</span>
+      {insights.optimizationSuggestions && insights.optimizationSuggestions.length > 0 && (
+        <div>
+          <h4 className="text-lg font-semibold text-white mb-3 flex items-center">
+            <Lightbulb className="w-5 h-5 text-orange-400 mr-2" />
+            Recommendations
           </h4>
-          <div className="bg-primary-50 border border-primary-200 rounded-lg p-4">
-            <ul className="space-y-2">
-              {insights.optimizationSuggestions.map((suggestion, index) => (
-                <li key={index} className="flex items-start space-x-2">
-                  <div className="w-2 h-2 bg-primary-600 rounded-full mt-2 flex-shrink-0"></div>
-                  <span className="text-gray-700">{suggestion}</span>
-                </li>
-              ))}
-            </ul>
+          <div className="space-y-2">
+            {insights.optimizationSuggestions.map((suggestion, index) => (
+              <div key={index} className="flex items-start space-x-3 p-3 bg-orange-900/20 border border-orange-500/30 rounded-lg">
+                <Target className="w-4 h-4 text-orange-400 mt-0.5 flex-shrink-0" />
+                <p className="text-gray-300 text-sm">{suggestion}</p>
+              </div>
+            ))}
           </div>
         </div>
       )}

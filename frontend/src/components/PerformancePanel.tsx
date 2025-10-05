@@ -1,7 +1,6 @@
 import React from 'react';
 import { PerformanceAnalysis } from '../types/analysis';
-import { Zap, Globe, Clock, BarChart3 } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { Zap, Clock, TrendingUp, Globe } from 'lucide-react';
 
 interface PerformancePanelProps {
   performance: PerformanceAnalysis;
@@ -9,136 +8,130 @@ interface PerformancePanelProps {
 
 export const PerformancePanel: React.FC<PerformancePanelProps> = ({ performance }) => {
   const getScoreColor = (score: number) => {
-    if (score >= 90) return 'text-success-600 bg-success-50';
-    if (score >= 70) return 'text-warning-600 bg-warning-50';
-    return 'text-danger-600 bg-danger-50';
+    if (score >= 90) return 'text-green-400';
+    if (score >= 70) return 'text-yellow-400';
+    return 'text-red-400';
+  };
+
+  const getScoreBgColor = (score: number) => {
+    if (score >= 90) return 'bg-green-900/20 border-green-500/30';
+    if (score >= 70) return 'bg-yellow-900/20 border-yellow-500/30';
+    return 'bg-red-900/20 border-red-500/30';
   };
 
   const coreWebVitals = [
     {
       name: 'FCP',
       value: performance.firstContentfulPaint,
+      unit: 'ms',
       threshold: 1800,
-      label: 'First Contentful Paint',
+      description: 'First Contentful Paint'
     },
     {
       name: 'LCP',
       value: performance.largestContentfulPaint,
+      unit: 'ms',
       threshold: 2500,
-      label: 'Largest Contentful Paint',
+      description: 'Largest Contentful Paint'
     },
     {
       name: 'CLS',
       value: performance.cumulativeLayoutShift,
+      unit: '',
       threshold: 0.1,
-      label: 'Cumulative Layout Shift',
+      description: 'Cumulative Layout Shift'
     },
     {
       name: 'FID',
       value: performance.firstInputDelay,
+      unit: 'ms',
       threshold: 100,
-      label: 'First Input Delay',
+      description: 'First Input Delay'
     },
     {
       name: 'TBT',
       value: performance.totalBlockingTime,
+      unit: 'ms',
       threshold: 200,
-      label: 'Total Blocking Time',
-    },
+      description: 'Total Blocking Time'
+    }
   ];
-
-  const chartData = coreWebVitals.map(vital => ({
-    name: vital.name,
-    value: vital.value,
-    threshold: vital.threshold,
-  }));
 
   return (
     <div className="card">
-      <div className="flex items-center space-x-2 mb-6">
-        <Zap className="w-6 h-6 text-primary-600" />
-        <h3 className="text-xl font-bold text-gray-900">Performance Analysis</h3>
-        <div className={`px-3 py-1 rounded-full text-sm font-medium ${getScoreColor(performance.performanceScore)}`}>
-          {performance.performanceScore}/100
+      <div className="flex items-center space-x-3 mb-6">
+        <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+          <Zap className="w-5 h-5 text-white" />
+        </div>
+        <h3 className="text-xl font-bold gradient-text">Performance Analysis</h3>
+      </div>
+
+      {/* Performance Score */}
+      <div className="mb-6">
+        <div className="bg-gray-800 rounded-lg p-4">
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-gray-300">Performance Score</span>
+            <div className="flex items-center space-x-3">
+              <div className="w-24 bg-gray-700 rounded-full h-2">
+                <div 
+                  className="bg-gradient-to-r from-red-500 to-orange-500 h-2 rounded-full transition-all duration-300"
+                  style={{ width: `${performance.performanceScore}%` }}
+                ></div>
+              </div>
+              <span className={`font-bold text-lg ${getScoreColor(performance.performanceScore)}`}>
+                {performance.performanceScore}/100
+              </span>
+            </div>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-gray-300">Load Time</span>
+            <span className="text-white font-semibold">{performance.loadTime}ms</span>
+          </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Core Web Vitals */}
-        <div>
-          <h4 className="font-semibold text-gray-900 mb-4 flex items-center space-x-2">
-            <BarChart3 className="w-5 h-5" />
-            <span>Core Web Vitals</span>
-          </h4>
-          <div className="space-y-3">
-            {coreWebVitals.map((vital, index) => {
-              const isGood = vital.value <= vital.threshold;
-              return (
-                <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div>
-                    <div className="font-medium text-gray-900">{vital.label}</div>
-                    <div className="text-sm text-gray-600">Threshold: {vital.name === 'CLS' ? vital.threshold : vital.threshold + 'ms'}</div>
-                  </div>
-                  <div className="text-right">
-                    <div className={`font-bold ${isGood ? 'text-success-600' : 'text-danger-600'}`}>
-                      {vital.name === 'CLS' ? vital.value.toFixed(3) : vital.value.toFixed(1)}{vital.name === 'CLS' ? '' : 'ms'}
-                    </div>
-                    <div className={`text-xs ${isGood ? 'text-success-600' : 'text-danger-600'}`}>
-                      {isGood ? 'Good' : 'Needs Improvement'}
-                    </div>
-                  </div>
+      {/* Core Web Vitals */}
+      <div className="mb-6">
+        <h4 className="text-lg font-semibold text-white mb-3">Core Web Vitals</h4>
+        <div className="bg-gray-800 rounded-lg p-4 space-y-3">
+          {coreWebVitals.map((vital) => {
+            const isGood = vital.value <= vital.threshold;
+            return (
+              <div key={vital.name} className="flex items-center justify-between">
+                <div>
+                  <span className="text-gray-300 font-mono text-sm">{vital.name}</span>
+                  <p className="text-xs text-gray-500">{vital.description}</p>
                 </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Performance Chart */}
-        <div>
-          <h4 className="font-semibold text-gray-900 mb-4">Performance Metrics</h4>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip 
-                  formatter={(value: any, name: string) => [
-                    `${value}ms`, 
-                    name === 'value' ? 'Current' : 'Threshold'
-                  ]}
-                />
-                <Bar dataKey="value" fill="#3b82f6" name="Current" />
-                <Bar dataKey="threshold" fill="#ef4444" name="Threshold" />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+                <div className="flex items-center space-x-2">
+                  <div className={`font-bold ${isGood ? 'text-green-400' : 'text-red-400'}`}>
+                    {vital.name === 'CLS' ? vital.value.toFixed(3) : vital.value.toFixed(1)}{vital.unit}
+                  </div>
+                  <div className={`w-2 h-2 rounded-full ${isGood ? 'bg-green-400' : 'bg-red-400'}`}></div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
 
       {/* Global Performance */}
-      {performance.globalMetrics.length > 0 && (
-        <div className="mt-6">
-          <h4 className="font-semibold text-gray-900 mb-4 flex items-center space-x-2">
-            <Globe className="w-5 h-5" />
-            <span>Global Performance</span>
-          </h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {performance.globalMetrics.map((metric, index) => (
-              <div key={index} className="p-4 bg-gray-50 rounded-lg">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="font-medium text-gray-900">{metric.region}</span>
-                  <span className="text-sm text-gray-600">{metric.availability.toFixed(1)}% uptime</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Clock className="w-4 h-4 text-gray-500" />
-                  <span className="text-lg font-bold text-gray-900">{metric.loadTime.toFixed(0)}ms</span>
-                </div>
+      <div>
+        <h4 className="text-lg font-semibold text-white mb-3">Global Performance</h4>
+        <div className="bg-gray-800 rounded-lg p-4 space-y-3">
+          {performance.globalMetrics.map((metric, index) => (
+            <div key={index} className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <Globe className="w-4 h-4 text-blue-400" />
+                <span className="text-gray-300">{metric.region}</span>
               </div>
-            ))}
-          </div>
+              <div className="text-right">
+                <div className="text-white font-semibold">{metric.loadTime.toFixed(0)}ms</div>
+                <div className="text-xs text-gray-500">{metric.availability.toFixed(1)}% uptime</div>
+              </div>
+            </div>
+          ))}
         </div>
-      )}
+      </div>
     </div>
   );
 };

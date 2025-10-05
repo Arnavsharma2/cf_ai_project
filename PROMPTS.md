@@ -26,3 +26,6 @@ Prompt 6:
 I need to fix the deployment to cloudflare pages can you fix the error in the deployment settings?
 
 Prompt 7:
+Make the theme of the frontend similar to that of https://agents.cloudflare.com/
+
+Prompt 8:
