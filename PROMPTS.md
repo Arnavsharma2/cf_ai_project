@@ -23,3 +23,6 @@ Module not found: Error: Can't resolve './App' in '/Users/aps/Projects/cf_ai_pro
 Encountered this error, describe the problem and attempt to fix it
 
 Prompt 6:
+I need to fix the deployment to cloudflare pages can you fix the error in the deployment settings?
+
+Prompt 7:
