@@ -134,10 +134,10 @@ function parseAIResponse(
         overallScore: parsed.overallScore || calculateOverallScore(security, performance),
         riskLevel: parsed.riskLevel || determineRiskLevel(security, performance),
         summary: parsed.summary || generateBasicSummary(security, performance),
-        strengths: parsed.strengths || generateStrengths(security, performance),
-        weaknesses: parsed.weaknesses || generateWeaknesses(security, performance),
-        threats: parsed.threats || generateThreats(security, performance),
-        optimizationSuggestions: parsed.optimizationSuggestions || generateSuggestions(security, performance),
+        strengths: Array.isArray(parsed.strengths) ? parsed.strengths : generateStrengths(security, performance),
+        weaknesses: Array.isArray(parsed.weaknesses) ? parsed.weaknesses : generateWeaknesses(security, performance),
+        threats: Array.isArray(parsed.threats) ? parsed.threats : generateThreats(security, performance),
+        optimizationSuggestions: Array.isArray(parsed.optimizationSuggestions) ? parsed.optimizationSuggestions : generateSuggestions(security, performance),
       };
     }
   } catch (error) {

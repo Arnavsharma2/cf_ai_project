@@ -147,7 +147,9 @@ function generateRecommendations(
   }
 
   // AI-generated recommendations
-  recommendations.push(...aiInsights.optimizationSuggestions);
+  if (aiInsights.optimizationSuggestions && Array.isArray(aiInsights.optimizationSuggestions)) {
+    recommendations.push(...aiInsights.optimizationSuggestions);
+  }
 
   return recommendations;
 }
