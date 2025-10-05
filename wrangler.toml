@@ -1,0 +1,25 @@
+name = "project-atlas"
+main = "src/index.ts"
+compatibility_date = "2025-01-05"
+
+[env.production]
+name = "project-atlas"
+
+[env.staging]
+name = "internet-health-analyzer-staging"
+
+# Environment variables for API keys
+[vars]
+OPENAI_API_KEY = ""
+VIRUSTOTAL_API_KEY = ""
+WEBPAGETEST_API_KEY = ""
+
+# Cloudflare AI binding (uncomment when ready to use)
+# [[ai]]
+# binding = "CLOUDFLARE_AI"
+
+# KV namespace for caching analysis results (will be created during deployment)
+# [[kv_namespaces]]
+# binding = "ANALYSIS_CACHE"
+# id = "your-kv-namespace-id"
+# preview_id = "your-preview-kv-namespace-id"
