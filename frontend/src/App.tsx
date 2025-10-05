@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import { AnalysisForm } from './components/AnalysisForm';
 import { Results } from './components/Results';
 import { GlobalPulse } from './components/GlobalPulse';
+import { ConfigurationPanel } from './components/ConfigurationPanel';
 import { useAnalysis } from './hooks/useAnalysis';
-import { Shield, Globe, Brain, Zap, ArrowRight } from 'lucide-react';
+import { Shield, Globe, Brain, Zap, ArrowRight, Settings } from 'lucide-react';
 import './index.css';
 
 function App() {
   const { analysis, loading, error, analyzeWebsite, clearAnalysis } = useAnalysis();
-  const [activeView, setActiveView] = useState<'analyzer' | 'monitor' | 'docs'>('analyzer');
+  const [activeView, setActiveView] = useState<'analyzer' | 'monitor' | 'docs' | 'config'>('analyzer');
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -36,7 +37,7 @@ function App() {
                 }`}
               >
                 <Brain className="w-4 h-4 inline mr-2" />
-                Security Analyzer
+                Website Security Scan
               </button>
               <button
                 onClick={() => setActiveView('monitor')}
@@ -47,7 +48,7 @@ function App() {
                 }`}
               >
                 <Globe className="w-4 h-4 inline mr-2" />
-                Global Monitor
+                Internet Health Dashboard
               </button>
               <button
                 onClick={() => setActiveView('docs')}
@@ -58,7 +59,18 @@ function App() {
                 }`}
               >
                 <Shield className="w-4 h-4 inline mr-2" />
-                Documentation
+                API Documentation
+              </button>
+              <button
+                onClick={() => setActiveView('config')}
+                className={`px-4 py-2 rounded-md font-medium transition-all duration-200 ${
+                  activeView === 'config'
+                    ? 'bg-orange-500 text-white'
+                    : 'text-gray-400 hover:text-white'
+                }`}
+              >
+                <Settings className="w-4 h-4 inline mr-2" />
+                Settings
               </button>
             </div>
           </div>
@@ -85,14 +97,20 @@ function App() {
               onClick={() => setActiveView('analyzer')}
               className="btn-primary text-lg px-8 py-4"
             >
-              Get Started
+              Scan Website Security
               <ArrowRight className="w-5 h-5 inline ml-2" />
+            </button>
+            <button 
+              onClick={() => setActiveView('monitor')}
+              className="btn-secondary text-lg px-8 py-4"
+            >
+              View Internet Health
             </button>
             <button 
               onClick={() => setActiveView('docs')}
               className="btn-secondary text-lg px-8 py-4"
             >
-              View Documentation
+              API Documentation
             </button>
           </div>
         </div>
@@ -103,9 +121,9 @@ function App() {
         {activeView === 'analyzer' ? (
           <div className="space-y-12">
             <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold mb-4 gradient-text">Security Analysis</h2>
+              <h2 className="text-4xl font-bold mb-4 gradient-text">Website Security Scanner</h2>
               <p className="text-xl text-gray-400 max-w-3xl mx-auto">
-                Comprehensive security scanning with AI-powered insights and recommendations
+                Analyze any website for security vulnerabilities, performance issues, and receive AI-powered recommendations
               </p>
             </div>
             <AnalysisForm onAnalyze={analyzeWebsite} loading={loading} />
@@ -120,12 +138,22 @@ function App() {
         ) : activeView === 'monitor' ? (
           <div className="space-y-12">
             <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold mb-4 gradient-text">Global Monitoring</h2>
+              <h2 className="text-4xl font-bold mb-4 gradient-text">Internet Health Dashboard</h2>
               <p className="text-xl text-gray-400 max-w-3xl mx-auto">
-                Real-time internet health monitoring across global regions
+                Monitor global internet health, regional performance, and security threats in real-time
               </p>
             </div>
             <GlobalPulse />
+          </div>
+        ) : activeView === 'config' ? (
+          <div className="space-y-12">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl font-bold mb-4 gradient-text">Configuration Settings</h2>
+              <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+                Customize health monitoring, pulse tracking, and analysis behavior
+              </p>
+            </div>
+            <ConfigurationPanel />
           </div>
         ) : (
           <div className="space-y-12">

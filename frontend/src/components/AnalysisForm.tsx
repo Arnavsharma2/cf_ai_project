@@ -98,10 +98,10 @@ export const AnalysisForm: React.FC<AnalysisFormProps> = ({ onAnalyze, loading }
           {loading ? (
             <span className="flex items-center justify-center">
               <Loader2 className="animate-spin w-5 h-5 mr-2" />
-              Analyzing Website...
+              Scanning Website Security...
             </span>
           ) : (
-            'Analyze Website'
+            'Scan Website Security'
           )}
         </button>
       </form>
