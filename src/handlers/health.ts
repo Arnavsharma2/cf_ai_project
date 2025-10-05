@@ -6,7 +6,7 @@ export async function getHealthCheck(env: Env): Promise<HealthCheckResponse> {
   
   // Check service availability
   const services = {
-    openai: !!env.OPENAI_API_KEY,
+    groq: !!env.GROQ_API_KEY,
     security: !!env.VIRUSTOTAL_API_KEY,
     performance: !!env.WEBPAGETEST_API_KEY,
   };

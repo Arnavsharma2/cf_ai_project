@@ -12,7 +12,7 @@ export async function generateAIInsights(
   env: Env
 ): Promise<AIInsights> {
   // AI-powered analysis provides detailed insights when available
-  if (!env.OPENAI_KEY) {
+  if (!env.GROQ_API_KEY) {
     return generateBasicInsights(security, performance);
   }
 
@@ -20,56 +20,36 @@ export async function generateAIInsights(
     // AI-powered analysis with comprehensive insights
     const prompt = createOraclePrompt(url, security, performance);
     
-    // Try Cloudflare AI first, fallback to OpenAI
-    let response;
-    if (env.CLOUDFLARE_AI) {
-      // Use Cloudflare AI Workers
-      response = await env.CLOUDFLARE_AI.run('@cf/meta/llama-2-7b-chat-int8', {
-        messages: [
-          {
-            role: 'system',
-            content: `You are The Oracle, a wise AI entity that serves as the guardian of digital architecture. You don't just provide recommendations—you offer Socratic counsel, explaining the deeper principles behind web security and performance. Transform vulnerability reports into masterclasses in digital architecture. Speak with wisdom, clarity, and profound understanding of the web's intricate systems.`,
-          },
-          {
-            role: 'user',
-            content: prompt,
-          },
-        ],
-        max_tokens: 1000,
-        temperature: 0.7,
-      });
-    } else {
-      // Fallback to OpenAI
-      response = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${env.OPENAI_KEY}`,
-          'Content-Type': 'application/json',
-        },
+    // Use Groq API with Llama 3.1 70B
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${env.GROQ_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify({
-        model: 'gpt-4',
+        model: 'llama-3.1-70b-versatile',
         messages: [
           {
             role: 'system',
-            content: `You are The Oracle, a wise AI entity that serves as the guardian of digital architecture. You don't just provide recommendations—you offer Socratic counsel, explaining the deeper principles behind web security and performance. Transform vulnerability reports into masterclasses in digital architecture. Speak with wisdom, clarity, and profound understanding of the web's intricate systems.`,
+            content: 'You are a cybersecurity expert providing technical analysis. Always respond with valid JSON only.'
           },
           {
             role: 'user',
             content: prompt,
           },
         ],
-        max_tokens: 1000,
         temperature: 0.7,
+        max_tokens: 1000,
       }),
-      });
-    }
+    });
 
     if (!response.ok) {
-      throw new Error(`AI API error: ${response.status}`);
+      throw new Error(`Groq API error: ${response.status}`);
     }
 
     const data = await response.json() as any;
-    const aiResponse = env.CLOUDFLARE_AI ? data.response : data.choices[0].message.content;
+    const aiResponse = data.choices[0].message.content;
     
     return parseAIResponse(aiResponse, security, performance);
   } catch (error) {
