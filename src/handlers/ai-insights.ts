@@ -12,7 +12,7 @@ export async function generateAIInsights(
   env: Env
 ): Promise<AIInsights> {
   // The Oracle speaks through AI, but wisdom can be found even in silence
-  if (!env.OPENAI_API_KEY) {
+  if (!env.OPENAI_KEY) {
     return generateBasicInsights(security, performance);
   }
 
@@ -43,7 +43,7 @@ export async function generateAIInsights(
       response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${env.OPENAI_API_KEY}`,
+          'Authorization': `Bearer ${env.OPENAI_KEY}`,
           'Content-Type': 'application/json',
         },
       body: JSON.stringify({

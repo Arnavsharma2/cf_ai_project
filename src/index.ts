@@ -6,7 +6,7 @@ import { getGlobalPulse } from './handlers/global-pulse';
 import { detectThreats } from './handlers/storm-seer';
 
 export interface Env {
-  OPENAI_API_KEY: string;
+  OPENAI_KEY: string;
   VIRUSTOTAL_API_KEY: string;
   WEBPAGETEST_API_KEY: string;
   ANALYSIS_CACHE?: KVNamespace;
