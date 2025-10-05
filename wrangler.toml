@@ -1,4 +1,4 @@
-name = "project-atlas"
+name = "cfai"
 main = "src/index.ts"
 compatibility_date = "2025-01-05"
 
