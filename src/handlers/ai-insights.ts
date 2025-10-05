@@ -133,7 +133,11 @@ function parseAIResponse(
       return {
         overallScore: parsed.overallScore || calculateOverallScore(security, performance),
         riskLevel: parsed.riskLevel || determineRiskLevel(security, performance),
-        summary: parsed.summary || generateBasicSummary(security, performance),
+        summary: typeof parsed.summary === 'string' ? parsed.summary : 
+                 (typeof parsed.summary === 'object' && parsed.summary !== null ? 
+                  (parsed.summary.security && parsed.summary.performance ? 
+                   `${parsed.summary.security} ${parsed.summary.performance}` : 
+                   JSON.stringify(parsed.summary)) : generateBasicSummary(security, performance)),
         strengths: Array.isArray(parsed.strengths) ? parsed.strengths : generateStrengths(security, performance),
         weaknesses: Array.isArray(parsed.weaknesses) ? parsed.weaknesses : generateWeaknesses(security, performance),
         threats: Array.isArray(parsed.threats) ? parsed.threats : generateThreats(security, performance),
