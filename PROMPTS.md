@@ -22,3 +22,4 @@ ERROR in ./src/index.tsx 6:0-24
 Module not found: Error: Can't resolve './App' in '/Users/aps/Projects/cf_ai_project/frontend/src'
 Encountered this error, describe the problem and attempt to fix it
 
+Prompt 6:
